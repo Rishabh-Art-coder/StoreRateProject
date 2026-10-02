@@ -1,6 +1,8 @@
 import "./App.css";
 import Header from "./components/Header.jsx";
 import AuthScreen from "./pages/AuthScreen.jsx";
+
+import OwnerDashboard from "./pages/OwnerDashboard.jsx";
 function App() {
   return (
     <>
@@ -8,7 +10,9 @@ function App() {
       {/* <Header />
        */}
 
-      <AuthScreen />
+      {/* <AuthScreen /> */}
+
+      <OwnerDashboard />
     </>
   );
 }
