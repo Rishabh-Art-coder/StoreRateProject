@@ -1,15 +1,22 @@
 import { useState } from 'react';
 import Field from '../components/Field.jsx';
-
+import { useAuth } from '../context/AuthContext.jsx';
 export default function AuthScreen() {
-
+  const login = useAuth();
   const [mode, setMode] = useState('login');
   const [error, setError] = useState('');
   const [form, setForm] = useState({});
   const set = key => value => setForm({ ...form, [key]: value });
 
 
-  
+  const submit = async () => {
+
+    const problem = mode === 'signup' ? firstError(form, ['name', 'email', 'address', 'password']) : null;
+    if (problem) return setError(problem);
+    try {
+      login(data.token, data.user);
+    } catch (x) { setError(x.message); }
+  };
 
   return (
     <>
