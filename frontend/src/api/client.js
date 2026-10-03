@@ -2,12 +2,12 @@
 
 export async function api(path, { method = "GET", body } = {}) {
 
-  const res = await fetch('/api' + path , {
-    method , 
-    body : body && JSON.stringify(body),
+  const res = await fetch('/api' + path, {
+    method,
+    body: body && JSON.stringify(body),
     headers: {
-      'Content-Type' : 'application/json',
-      Authorization : 'Bearer' + (localStorage.getItem('token') || ''),
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer' + (localStorage.getItem('token') || ''),
 
     },
   });

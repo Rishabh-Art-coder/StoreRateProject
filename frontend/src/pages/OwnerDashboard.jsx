@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
+import { api } from "../api/client.js";
 import DataTable from "../components/Datatable";
 import Stars from "../components/Stars.jsx";
 // Store owner: apne store ki average rating aur rating dene walon ki list.
 export default function OwnerDashboard() {
   const [data, setData] = useState(null);
+  useEffect(() => { api('/owner/dashboard').then(setData); }, []);
 
-  // setData = {
-  //   store : "card",
-  //   average : "1",
-  // }
+
 
   if (!data) return null;
   if (!data.store) return (
@@ -28,7 +27,7 @@ export default function OwnerDashboard() {
         <h2>Customers who rated your store</h2>
         <DataTable url="/owner/dashboard"
           cols={[{ k: 'name', label: 'Name' }, { k: 'email', label: 'Email' },
-            { k: 'rating', label: 'Rating', render: r => <Stars v={r.rating} /> }]} />
+          { k: 'rating', label: 'Rating', render: r => <Stars v={r.rating} /> }]} />
       </div>
     </>
   );
