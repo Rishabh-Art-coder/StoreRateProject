@@ -1,8 +1,15 @@
+import { useEffect, useState } from "react";
 import DataTable from "../components/Datatable";
 import Stars from "../components/Stars.jsx";
 // Store owner: apne store ki average rating aur rating dene walon ki list.
 export default function OwnerDashboard() {
   const [data, setData] = useState(null);
+
+  // setData = {
+  //   store : "card",
+  //   average : "1",
+  // }
+
   if (!data) return null;
   if (!data.store) return (
     <div className="card">
