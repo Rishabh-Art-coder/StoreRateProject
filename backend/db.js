@@ -8,7 +8,7 @@ const pool = mysql.createPool({
   database: DB
   , decimalNumbers: true,
 });
-
+// run a query and return only the rows
 const q = async (sql, p) => (await pool.query(sql, p))[0];
 
-module.exports = pool.promise();
+module.exports = {pool , q};
