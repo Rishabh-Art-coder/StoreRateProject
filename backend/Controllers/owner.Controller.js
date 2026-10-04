@@ -10,7 +10,11 @@ exports.getDashboard = async (req, res) => {
   if (!store) return res.json({ store: null, raters: [] });
   const raters = await q(
     `SELECT u.name,u.email,r.rating,r.updated_at FROM ratings r JOIN users u ON u.id=r.user_id
-     WHERE r.store_id=? ${orderBy(req, ["name", "email", "rating"], "name")}`,
+     WHERE r.store_id=? ${orderBy(
+       req,
+       { name: "u.name", email: "u.email", rating: "r.rating" },
+       "name",
+     )}`,
     [store.id],
   );
   res.json({ store, raters });

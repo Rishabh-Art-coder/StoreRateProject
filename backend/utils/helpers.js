@@ -1,11 +1,19 @@
-const bad = (res, msg , code = 400) => res.status(code).json({error: msg});
-const dup = (err) => err.code === "ER_DUP_ENTRY";
-const like = (v) => `%${v|| ""}%`;
+const bad = (res, msg, code = 400) => res.status(code).json({ error: msg });
+const dup = (err) => err && err.code === "ER_DUP_ENTRY";
+const like = (value) => `%${String(value || "").trim()}%`;
 
-// whitelist- based Order by to avoid sql injection
-
-const orderBy = (req , cols , def) => {
-  `ORDER BY ${cols.includes(req.query.sort) ? req.query.sort : def} ${req.query.order === "desc" ? "DESC" : "ASC"}`
+const orderBy = (req, columns, defaultColumn) => {
+  const column =
+    Array.isArray(columns)
+      ? columns.includes(req.query.sort)
+        ? req.query.sort
+        : defaultColumn
+      : Object.prototype.hasOwnProperty.call(columns, req.query.sort)
+        ? columns[req.query.sort]
+        : columns[defaultColumn];
+  return `ORDER BY ${column} ${
+    String(req.query.order).toLowerCase() === "desc" ? "DESC" : "ASC"
+  }`;
 };
 
-module.exports = {bad , dup , like , orderBy};
+module.exports = { bad, dup, like, orderBy };

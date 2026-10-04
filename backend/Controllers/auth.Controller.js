@@ -1,44 +1,47 @@
-const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const { q } = require("../db");
-const { auth, sign } = require("../middleware/auth");
+const { sign } = require("../Middleware/auth");
 const { check } = require("../utils/validation");
 const { bad, dup } = require("../utils/helpers");
-const { createUser } = require("../services/userService");
+const { createUser } = require("../services/userServices");
 
 exports.signup = async (req, res) => {
-  const e = check(req.body, ["name", "email", "address", "password"]);
-  if (e) return bad(res, e);
+  const error = check(req.body, ["name", "email", "address", "password"]);
+  if (error) return bad(res, error);
   try {
-    const u = await createUser(req.body, "user");
-    res.status(201).json({ token: sign(u), user: u });
+    const user = await createUser(req.body, "user");
+    return res.status(201).json({ token: sign(user), user });
   } catch (error) {
-    bad(res, dup(err) ? "Email already registered" : "Signup failed");
+    if (dup(error)) return bad(res, "Email already registered", 409);
+    throw error;
   }
 };
 
 exports.login = async (req, res) => {
-  const [u] = await q("SELECT * FROM users WHERE email=?", [
-    String(req.body.email || "").toLowerCase(),
-  ]);
+  const email = String(req.body?.email || "").trim().toLowerCase();
+  const password = String(req.body?.password || "");
+  const [user] = await q("SELECT * FROM users WHERE email=?", [email]);
 
-  if (
-    !u ||
-    !(await bcrypt.compare(String(req.body.password || ""), u.password_hash))
-  )
+  if (!user || !(await bcrypt.compare(password, user.password_hash)))
     return bad(res, "Invalid email or password", 401);
-  res.json({
-    token: sign(u),
-    user: { id: u.id, name: u.name, email: u.email, role: u.role },
+  return res.json({
+    token: sign(user),
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
   });
 };
 
-exports.changePassword = async(req , res) => {
-  const e = check(req.body , ["password"]);
-  if (e) return bad(res, e);
-  await q("UPDATE users SET password_hash=? WHERE id=?", [
+exports.changePassword = async (req, res) => {
+  const error = check(req.body, ["password"]);
+  if (error) return bad(res, error);
+  const result = await q("UPDATE users SET password_hash=? WHERE id=?", [
     await bcrypt.hash(req.body.password, 10),
     req.user.id,
   ]);
-  res.json({ ok: true });
-}
+  if (!result.affectedRows) return res.sendStatus(404);
+  return res.json({ ok: true });
+};

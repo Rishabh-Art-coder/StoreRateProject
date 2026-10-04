@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const { auth } = require("../middleware/auth");
-const c = require("../controllers/storeController");
+const { auth } = require("../Middleware/auth");
+const c = require("../Controllers/stores.Controller");
 
 router.use(auth("user")); // neeche ke saare routes sirf normal user ke liye
 

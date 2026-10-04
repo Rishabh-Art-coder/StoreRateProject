@@ -1,14 +1,18 @@
-require('dotenv').config();
-const {dbConf , DB} = require('./config/index.js');
+const { dbConf, DB } = require("./config");
 
-const mysql = require('mysql2');
+const mysql = require("mysql2/promise");
 
 const pool = mysql.createPool({
   ...dbConf,
-  database: DB
-  , decimalNumbers: true,
+  database: DB,
+  decimalNumbers: true,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
-// run a query and return only the rows
-const q = async (sql, p) => (await pool.query(sql, p))[0];
+const q = async (sql, parameters = []) => {
+  const [rows] = await pool.query(sql, parameters);
+  return rows;
+};
 
-module.exports = {pool , q};
+module.exports = { pool, q };

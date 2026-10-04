@@ -1,22 +1,30 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require('../config');
+const { JWT_SECRET } = require("../config");
 
-const auth = (...roles) => {
+const auth = (...roles) => (req, res, next) => {
+  const authorization = req.headers.authorization || "";
+  const [scheme, token] = authorization.split(" ");
+  if (scheme !== "Bearer" || !token || !JWT_SECRET)
+    return res.sendStatus(401);
+
   try {
-    req.user = jwt.verify((req.headers.authorization || "").slice(7),
-      JWT_SECRET,);
-    if (roles.length && !roles.includes(req.user.role))
-      return res.sendStatus(403);
-    next();
-  } catch (error) {
-    res.sendStatus(401);
+    req.user = jwt.verify(token, JWT_SECRET);
+  } catch {
+    return res.sendStatus(401);
   }
-}
 
+  if (roles.length && !roles.includes(req.user.role))
+    return res.sendStatus(403);
+  return next();
+};
 
-const sign = (u) =>
-  jwt.sign({ id: u.id, role: u.role, name: u.name }, JWT_SECRET, {
-    expiresIn: "8h",
-  });
+const sign = (user) => {
+  if (!JWT_SECRET) throw new Error("JWT_SECRET must be configured");
+  return jwt.sign(
+    { id: user.id, role: user.role, name: user.name },
+    JWT_SECRET,
+    { expiresIn: "8h" },
+  );
+};
 
 module.exports = { auth, sign };
