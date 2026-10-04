@@ -42,7 +42,7 @@ export default function AddForm({ onDone }) {
       <p className="sub">Store owners are optional and can be assigned now or later.</p>
       <form onSubmit={submit}>
         <div className="grid2">
-          <Field label="Store name" value={form.name} onChange={update("name")} />
+          <Field label="Store name" type = "text" value={form.name} onChange={update("name")} />
           <Field label="Store email" type="email" value={form.email} onChange={update("email")} />
           <Field label="Address" value={form.address} onChange={update("address")} />
           <div>

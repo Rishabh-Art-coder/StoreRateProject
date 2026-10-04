@@ -1,27 +1,45 @@
 # StoreRate
 
-StoreRate is a frontend-only prototype. It runs without a backend and stores its demo accounts, stores, ratings, and signed-in session in this browser's `localStorage`.
+StoreRate is a React frontend connected to the Express API and MySQL database in `backend/`. The frontend sends requests to `/api`; during local development, Vite proxies those requests to the backend.
 
 ## Run locally
 
-```sh
-npm install
-npm run dev
-```
+1. Configure `backend/.env` with:
 
-## Demo accounts
+   ```env
+   DB_HOST=localhost
+   DB_USER=your_mysql_user
+   DB_PASSWORD=your_mysql_password
+   DB_NAME=store_rating
+   JWT_SECRET=replace_with_a_long_random_secret
+   ADMIN_EMAIL=admin@example.com
+   ADMIN_PASSWORD=replace_with_a_strong_password
+   PORT=4000
+   ```
 
-| Role | Email | Password |
-| --- | --- | --- |
-| Admin | `admin@storerate.com` | `Admin@123` |
-| Owner | `owner@storerate.com` | `Owner@123` |
-| Customer | `user@storerate.com` | `User@123` |
+   `DB_NAME` and `PORT` are optional. The MySQL user needs permission to create the database and tables. On startup, the backend initializes the schema and creates the configured admin account if the database does not already contain an admin.
 
-- Admins can browse stores and add stores, optionally assigning an existing owner.
-- Owners can browse all stores and all registered users.
-- Customers can browse stores and submit or update ratings.
-- New sign-ups create customer accounts.
+2. In `backend/`, install dependencies and start the API:
 
-Demo data is saved locally in the browser and is not shared with other browsers. Clear the `storerate_demo_database` and `storerate_session` local storage entries to reset the demo.
+   ```sh
+   npm install
+   npm run dev
+   ```
 
-**This local authentication is for demonstration only.** It is not a secure substitute for a backend: browser storage and the demo passwords can be inspected or changed by the browser user. Do not use it for real accounts or sensitive information.
+3. In `frontend/`, install dependencies and start Vite:
+
+   ```sh
+   npm install
+   npm run dev
+   ```
+
+   Open the local URL printed by Vite. To use a different backend origin with the development proxy, set `VITE_BACKEND_URL` in `frontend/.env`. For deployments without the proxy, set `VITE_API_BASE_URL` to the API base URL (including `/api`).
+
+## Accounts
+
+- Sign in as an administrator using the `ADMIN_EMAIL` and `ADMIN_PASSWORD` configured for the backend.
+- Create customer accounts from the sign-up form.
+- Create owner accounts through the authenticated `POST /api/admin/users` endpoint with `"role": "owner"`.
+- Authenticated requests use the JWT returned by the backend. The session and token are stored in browser local storage; signing out removes both.
+
+The backend must be running and connected to MySQL for sign-in, sign-up, dashboards, store creation, and ratings to work.

@@ -5,8 +5,10 @@ const rules = {
       value.trim().length <= 60) ||
     "Name must be 20-60 characters",
   address: (value) =>
-    (typeof value === "string" && value.length <= 400) ||
-    "Address must be at most 400 characters",
+    (typeof value === "string" &&
+      value.trim().length > 0 &&
+      value.length <= 400) ||
+    "Address is required and must be at most 400 characters",
   email: (value) =>
     (typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) ||
     "Enter a valid email",

@@ -73,7 +73,7 @@ exports.listStores = async (req, res) => {
   const { name, email, address } = req.query;
   res.json(
     await q(
-      `SELECT s.id,s.name,s.email,s.address,u.name AS owner,ROUND(AVG(r.rating),1) AS rating
+      `SELECT s.id,s.name,s.email,s.address,COALESCE(u.name,'Unassigned') AS owner,ROUND(AVG(r.rating),1) AS rating
        FROM stores s LEFT JOIN users u ON u.id=s.owner_id
        LEFT JOIN ratings r ON r.store_id=s.id
        WHERE s.name LIKE ? AND s.email LIKE ? AND s.address LIKE ?
@@ -84,6 +84,7 @@ exports.listStores = async (req, res) => {
            name: "s.name",
            email: "s.email",
            address: "s.address",
+           owner: "u.name",
            rating: "rating",
          },
          "name",

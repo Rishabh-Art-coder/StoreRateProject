@@ -17,6 +17,8 @@ test("validation accepts correct values and rejects invalid values", () => {
     null,
   );
   assert.match(check({}, ["name"]), /Name must be 20-60 characters/);
+  assert.match(check({ address: " " }, ["address"]), /Address is required/);
+  assert.match(check({ address: "a".repeat(401) }, ["address"]), /400 characters/);
   assert.equal(check(null, ["email"]), "Request body is required");
 });
 
