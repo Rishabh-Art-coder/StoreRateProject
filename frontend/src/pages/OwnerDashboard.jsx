@@ -1,34 +1,49 @@
-import { useEffect, useState } from "react";
-import { api } from "../api/client.js";
+import { useState } from "react";
 import DataTable from "../components/DataTable.jsx";
 import Stars from "../components/Stars.jsx";
-// Store owner: apne store ki average rating aur rating dene walon ki list.
+
 export default function OwnerDashboard() {
-  const [data, setData] = useState(null);
-  useEffect(() => { api('/owner/dashboard').then(setData); }, []);
-
-
-
-  if (!data) return null;
-  if (!data.store) return (
-    <div className="card">
-      <h2>No store linked yet</h2>
-      <p className="empty">Ask an administrator to assign a store to your account.</p>
-    </div>
-  );
-
+  const [tab, setTab] = useState("stores");
+  const tabs = [["stores", "All stores"], ["users", "All users"]];
   return (
     <>
-      <div className="stats">
-        {/* <div className="stat"><b>{data.store.average ?? '–'}</b><span>Average rating for {data.store.name}</span></div> */}
-        {/* <div className="stat"><b>{data.store.total}</b><span>Ratings received</span></div> */}
+      <div className="tabs">
+        {tabs.map(([key, label]) => (
+          <button key={key} className={`tab${tab === key ? " on" : ""}`} onClick={() => setTab(key)}>{label}</button>
+        ))}
       </div>
-      <div className="card">
-        <h2>Customers who rated your store</h2>
-        <DataTable url="/owner/dashboard"
-          cols={[{ k: 'name', label: 'Name' }, { k: 'email', label: 'Email' },
-          { k: 'rating', label: 'Rating', render: r => <Stars v={r.rating} /> }]} />
-      </div>
+      {tab === "stores" && (
+        <div className="card">
+          <h2>All stores</h2>
+          <DataTable url="/owner/stores"
+            filters={[{ k: "name", label: "Filter by name" }, { k: "address", label: "Filter by address" }]}
+            cols={[
+              { k: "name", label: "Store" },
+              { k: "email", label: "Email" },
+              { k: "address", label: "Address" },
+              { k: "owner", label: "Store owner" },
+              { k: "rating", label: "Rating", render: (row) => <Stars v={row.rating} /> },
+            ]} />
+        </div>
+      )}
+      {tab === "users" && (
+        <div className="card">
+          <h2>All users</h2>
+          <DataTable url="/owner/users"
+            filters={[
+              { k: "name", label: "Filter by name" },
+              { k: "email", label: "Filter by email" },
+              { k: "address", label: "Filter by address" },
+              { k: "role", label: "Any role", options: ["admin", "user", "owner"] },
+            ]}
+            cols={[
+              { k: "name", label: "Name" },
+              { k: "email", label: "Email" },
+              { k: "address", label: "Address" },
+              { k: "role", label: "Role", render: (row) => <span className={`badge badge-${row.role}`}>{row.role}</span> },
+            ]} />
+        </div>
+      )}
     </>
   );
 }

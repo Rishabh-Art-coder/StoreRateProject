@@ -1,101 +1,75 @@
-import { useState } from "react";
-import { toQueryString } from "../utils/helpers";
-export default function DataTable({
-  url,
-  cols,
-  filters = [],
-  reload,
-  onRow,
-  extraParams = {},
-}) {
-  const [rows, setRows] = useState();
+import { useEffect, useState } from "react";
+import { api } from "../api/client.js";
+import { toQueryString } from "../utils/helpers.js";
+
+export default function DataTable({ url, cols, filters = [], reload, onRow, extraParams = {} }) {
+  const [rows, setRows] = useState([]);
   const [filterValues, setFilterValues] = useState({});
-  const [sort, setSort] = useState({ key: cols[0].k, order: "asc" });
+  const [sort, setSort] = useState({ key: cols[0]?.k, order: "asc" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const extraParamsKey = JSON.stringify(extraParams);
 
-  // Filter ya sort badalte hi (250ms ruk kar) naya data mangwao.
   useEffect(() => {
-    const params = toQueryString({
-      ...filterValues,
-      ...extraParams,
-      sort: sort.key,
-      order: sort.order,
-    });
-    const timer = setTimeout(() => {
-      api(`${url}?${params}`)
-        .then((data) => {
-          setRows(data.raters || data);
-          setError("");
-        })
-        .catch((e) => setError(e.message));
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [url, filterValues, sort, reload, JSON.stringify(extraParams)]);
+    let active = true;
+    const params = toQueryString({ ...filterValues, ...extraParams, sort: sort.key, order: sort.order });
+    setLoading(true);
+    api(`${url}?${params}`)
+      .then((data) => {
+        if (!active) return;
+        setRows(Array.isArray(data) ? data : data.raters || []);
+        setError("");
+      })
+      .catch((requestError) => {
+        if (active) setError(requestError.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
+  }, [url, filterValues, sort, reload, extraParamsKey]);
 
-  const setFilter = (key, value) =>
-    setFilterValues({ ...filterValues, [key]: value });
-  const clickHeader = (key) =>
-    setSort({
-      key,
-      order: sort.key === key && sort.order === "asc" ? "desc" : "asc",
-    });
+  const setFilter = (key, value) => setFilterValues((current) => ({ ...current, [key]: value }));
+  const clickHeader = (key) => setSort((current) => ({
+    key,
+    order: current.key === key && current.order === "asc" ? "desc" : "asc",
+  }));
 
   return (
     <>
       {filters.length > 0 && (
         <div className="filters">
-          {filters.map((x) =>
-            x.options ? (
-              <select
-                key={x.k}
-                value={filterValues[x.k] || ""}
-                onChange={(e) => setFilter(x.k, e.target.value)}
-              >
-                <option value="">{x.label}</option>
-                {x.options.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            ) : (
-              <input
-                key={x.k}
-                placeholder={x.label}
-                value={filterValues[x.k] || ""}
-                onChange={(e) => setFilter(x.k, e.target.value)}
-              />
-            ),
-          )}
+          {filters.map((filter) => filter.options ? (
+            <select key={filter.k} value={filterValues[filter.k] || ""} onChange={(event) => setFilter(filter.k, event.target.value)}>
+              <option value="">{filter.label}</option>
+              {filter.options.map((option) => <option key={option}>{option}</option>)}
+            </select>
+          ) : (
+            <input key={filter.k} placeholder={filter.label} value={filterValues[filter.k] || ""}
+              onChange={(event) => setFilter(filter.k, event.target.value)} />
+          ))}
         </div>
       )}
-      {error && <div className="err">{error}</div>}
+      {error && <div className="err" role="alert">{error}</div>}
       <div className="wrap">
         <table>
           <thead>
-            <tr>
-              {cols.map((c) => (
-                <th key={c.k} onClick={() => clickHeader(c.k)}>
-                  {c.label}
-                  {sort.key === c.k ? (sort.order === "asc" ? " ▲" : " ▼") : ""}
-                </th>
-              ))}
-            </tr>
+            <tr>{cols.map((column) => (
+              <th key={column.k} onClick={() => clickHeader(column.k)}>
+                {column.label}{sort.key === column.k ? (sort.order === "asc" ? " ▲" : " ▼") : ""}
+              </th>
+            ))}</tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
-              <tr
-                key={r.id || i}
-                onClick={() => onRow && onRow(r)}
-                style={onRow ? { cursor: "pointer" } : {}}
-              >
-                {cols.map((c) => (
-                  <td key={c.k}>{c.render ? c.render(r) : r[c.k]}</td>
-                ))}
+            {rows.map((row, index) => (
+              <tr key={row.id || index} onClick={() => onRow?.(row)} style={onRow ? { cursor: "pointer" } : undefined}>
+                {cols.map((column) => <td key={column.k}>{column.render ? column.render(row) : row[column.k]}</td>)}
               </tr>
             ))}
           </tbody>
         </table>
-        {!rows.length && !error && (
-          <div className="empty">Nothing matches yet.</div>
-        )}
+        {loading && <div className="empty">Loading…</div>}
+        {!loading && !error && !rows.length && <div className="empty">Nothing matches yet.</div>}
       </div>
     </>
   );

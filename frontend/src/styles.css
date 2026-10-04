@@ -26,6 +26,7 @@ input::placeholder{color:#8A99A9}
 input:focus,select:focus{outline:0;border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,124,134,.18)}
 .btn{background:var(--teal);color:#fff;border:0;border-radius:9px;padding:11px 20px;font-weight:700;cursor:pointer;margin-top:18px;transition:background .15s,transform .05s}
 .btn:hover{background:var(--teal-d)}.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.65;cursor:wait}
 .btn:focus-visible,.tab:focus-visible,.star:focus-visible,.link:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .btn.ghost{background:transparent;border:1px solid #3A5779;margin:0;padding:8px 16px;color:#fff}.btn.ghost:hover{background:var(--navy2)}
 .link{background:none;border:0;color:var(--teal);cursor:pointer;font-weight:700;padding:0}.link:hover{text-decoration:underline}
@@ -48,6 +49,12 @@ input:focus,select:focus{outline:0;border-color:var(--teal);box-shadow:0 0 0 3px
 .auth-card h2{font-size:26px;margin-bottom:4px}.auth-card .sub{color:var(--muted);margin:0 0 8px}
 .auth-card .btn{width:100%;padding:13px}
 .switch{text-align:center;margin:20px 0 0;color:var(--muted);font-size:14px}
+.demo-logins{display:grid;gap:8px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.demo-logins>strong{font-size:13px}
+.demo-login{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text);font-weight:700;cursor:pointer;text-align:left}
+.demo-login:hover{border-color:var(--teal);background:#F7FCFC}
+.demo-login span,.demo-logins small{color:var(--muted);font-size:12px;font-weight:400}
+.demo-logins small{line-height:1.5}
 
 /* ---------- dashboard stats ---------- */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:24px}
