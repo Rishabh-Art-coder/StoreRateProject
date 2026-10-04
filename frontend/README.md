@@ -1,16 +1,27 @@
-# React + Vite
+# StoreRate
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+StoreRate is a frontend-only prototype. It runs without a backend and stores its demo accounts, stores, ratings, and signed-in session in this browser's `localStorage`.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm install
+npm run dev
+```
 
-## React Compiler
+## Demo accounts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@storerate.com` | `Admin@123` |
+| Owner | `owner@storerate.com` | `Owner@123` |
+| Customer | `user@storerate.com` | `User@123` |
 
-## Expanding the Oxlint configuration
+- Admins can browse stores and add stores, optionally assigning an existing owner.
+- Owners can browse all stores and all registered users.
+- Customers can browse stores and submit or update ratings.
+- New sign-ups create customer accounts.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Demo data is saved locally in the browser and is not shared with other browsers. Clear the `storerate_demo_database` and `storerate_session` local storage entries to reset the demo.
+
+**This local authentication is for demonstration only.** It is not a secure substitute for a backend: browser storage and the demo passwords can be inspected or changed by the browser user. Do not use it for real accounts or sensitive information.
