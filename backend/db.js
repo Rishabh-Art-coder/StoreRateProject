@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+const {dbConf , DB} = require('./config/index.js');
 
 const mysql = require('mysql2');
 
