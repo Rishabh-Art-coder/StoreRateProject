@@ -4,16 +4,40 @@ import AuthScreen from "./pages/AuthScreen.jsx";
 
 import OwnerDashboard from "./pages/OwnerDashboard.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
+
+
+// Role ke hisaab se kaun sa dashboard dikhana hai.
+const dashboards = { admin: AdminDashboard, user: UserDashboard, owner: OwnerDashboard };
+
+const subtitles = {
+  admin: 'Manage users and stores, and keep an eye on platform activity.',
+  user: 'Browse stores and share your ratings.',
+  owner: 'See how customers are rating your store.',
+};
+
+
 function App() {
+
+  const { user } = useAuth();
+
+  if (!user) {
+    return <AuthScreen />
+  }
+
+  const Dashboard = dashboards[user.role];
   return (
     <>
-      {/* <h1>Rishabh </h1> */}
-      {/* <Header />
-       */}
+      <Header>
+        <main>
 
-      {/* <AuthScreen /> */}
-
-      <UserDashboard />
+          <div className="page-head">
+            <h2>Welcome back ,{user.name.split(' ')[0]} </h2>
+            <p></p>
+          </div>
+          <Dashboard />
+          {user.role !== 'admin' && <PasswordCard />}
+        </main>
+      </Header>
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client.js";
-import DataTable from "../components/Datatable";
+import DataTable from "../components/DataTable.jsx";
 import Stars from "../components/Stars.jsx";
 // Store owner: apne store ki average rating aur rating dene walon ki list.
 export default function OwnerDashboard() {
