@@ -6,39 +6,27 @@ import OwnerDashboard from "./pages/OwnerDashboard.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
-// Role ke hisaab se kaun sa dashboard dikhana hai.
 const dashboards = { admin: AdminDashboard, user: UserDashboard, owner: OwnerDashboard };
-
 const subtitles = {
-  admin: 'Manage users and stores, and keep an eye on platform activity.',
+  admin: 'Add stores and keep platform activity up to date.',
   user: 'Browse stores and share your ratings.',
-  owner: 'See how customers are rating your store.',
+  owner: 'Review every store and user on StoreRate.',
 };
 
-
 function App() {
-
   const { user } = useAuth();
-
-  // if (!user) {
-  //   return <AuthScreen />
-  // }
-
-  const Dashboard = dashboards[user.role];
+  const Dashboard = user && dashboards[user.role];
+  if (!Dashboard) return <AuthScreen />;
   return (
-    <>
-      <Header>
-        <main>
-
-          <div className="page-head">
-            {/* <h2>Welcome back ,{user.name.split(' ')[0]} </h2> */}
-            <p></p>
-          </div>
-          <Dashboard />
-          {/* {user.role !== 'admin' && <PasswordCard />} */}
-        </main>
-      </Header>
-    </>
+    <Header>
+      <main>
+        <div className="page-head">
+          <h2>Welcome, {user.name.split(" ")[0]}</h2>
+          <p>{subtitles[user.role]}</p>
+        </div>
+        <Dashboard />
+      </main>
+    </Header>
   );
 }
 
