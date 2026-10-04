@@ -1,10 +1,10 @@
 import "./App.css";
 import Header from "./components/Header.jsx";
 import AuthScreen from "./pages/AuthScreen.jsx";
-
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 import OwnerDashboard from "./pages/OwnerDashboard.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
-
+import { useAuth } from "./context/AuthContext.jsx";
 
 // Role ke hisaab se kaun sa dashboard dikhana hai.
 const dashboards = { admin: AdminDashboard, user: UserDashboard, owner: OwnerDashboard };
@@ -20,9 +20,9 @@ function App() {
 
   const { user } = useAuth();
 
-  if (!user) {
-    return <AuthScreen />
-  }
+  // if (!user) {
+  //   return <AuthScreen />
+  // }
 
   const Dashboard = dashboards[user.role];
   return (
@@ -31,11 +31,11 @@ function App() {
         <main>
 
           <div className="page-head">
-            <h2>Welcome back ,{user.name.split(' ')[0]} </h2>
+            {/* <h2>Welcome back ,{user.name.split(' ')[0]} </h2> */}
             <p></p>
           </div>
           <Dashboard />
-          {user.role !== 'admin' && <PasswordCard />}
+          {/* {user.role !== 'admin' && <PasswordCard />} */}
         </main>
       </Header>
     </>
